@@ -25,6 +25,9 @@ class ConcatCategoricalFeatureEmbedder(nn.Module):
             for size, dim in zip(categorical_sizes, embedding_sizes)
         ])
 
+        total_embedding_size = sum(embedding_sizes)
+        self.layer_norm = nn.LayerNorm(total_embedding_size)
+
     def forward(self, categorical_inputs: List[torch.Tensor]) -> torch.Tensor:
         """
         Forward pass of the ConcatCategoricalFeatureEmbedder. Embeds the input indices for each 
@@ -39,7 +42,8 @@ class ConcatCategoricalFeatureEmbedder(nn.Module):
         """
         embedded_features = [emb(input) for emb, input in zip(self.embeddings, categorical_inputs)]
         concatenated_embeddings = torch.cat(embedded_features, dim=-1)
-        return concatenated_embeddings
+        normalized_embeddings = self.layer_norm(concatenated_embeddings)
+        return normalized_embeddings
 
 class SumCategoricalFeatureEmbedder(nn.Module):
     def __init__(self, categorical_sizes, embedding_dim):
