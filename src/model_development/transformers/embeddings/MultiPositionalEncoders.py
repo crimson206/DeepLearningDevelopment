@@ -22,7 +22,7 @@ class MultiArbitraryPositionalEncoder(nn.Module):
             ArbitraryPositionalEncoder(max_pos_len, d_emb) for max_pos_len, d_emb in zip(max_lengths, embedding_dims)
         ])
 
-    def forward(self, *positional_ids, attention_mask):
+    def forward(self, *positional_ids, attention_mask=None):
         encoded_features = [encoding(pos_id.long()) for encoding, pos_id in zip(self.encodings, positional_ids)]
         combined_encoding = torch.cat(encoded_features, dim=-1)
 
