@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 from torch import Tensor
+from typing import Optional
 
 class ContinuousFeatureEmbedder(nn.Module):
     """
@@ -20,7 +21,7 @@ class ContinuousFeatureEmbedder(nn.Module):
         self.linear = nn.Linear(input_dim, output_dim)
         self.layer_norm = nn.LayerNorm(output_dim)
         
-    def forward(self, x: Tensor) -> Tensor:
+    def forward(self, x: Tensor, attention_mask: Optional[Tensor] = None) -> Tensor:
         """
         Forward pass of the embedder.
 
@@ -30,6 +31,9 @@ class ContinuousFeatureEmbedder(nn.Module):
         Args:
             x (Tensor): The input tensor containing continuous features.
                         Shape: (n_batch, n_seq, input_dim).
+            attention_mask (Optional[torch.Tensor]): An optional mask tensor indicating which positions should be
+                                                     attended to and which should not. 
+                                                     The shape is (n_batch, seq_len)
 
         Returns:
             Tensor: The output tensor containing the embedded features after layer normalization.
@@ -38,4 +42,9 @@ class ContinuousFeatureEmbedder(nn.Module):
         x = x.float()
         embedded_x = self.linear(x)
         normalized_embedded_x = self.layer_norm(embedded_x)
+
+        if attention_mask is not None:
+            expanded_mask = attention_mask.unsqueeze(-1).expand_as(normalized_embedded_x)
+            normalized_embedded_x = normalized_embedded_x * expanded_mask
+
         return normalized_embedded_x

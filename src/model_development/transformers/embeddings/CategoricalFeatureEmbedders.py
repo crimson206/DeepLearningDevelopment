@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
-from typing import List
+from torch import Tensor
+from typing import List, Optional
 
 class ConcatCategoricalFeatureEmbedder(nn.Module):
     """
@@ -28,22 +29,30 @@ class ConcatCategoricalFeatureEmbedder(nn.Module):
         total_embedding_size = sum(embedding_sizes)
         self.layer_norm = nn.LayerNorm(total_embedding_size)
 
-    def forward(self, categorical_inputs: List[torch.Tensor]) -> torch.Tensor:
+    def forward(self, categorical_inputs: List[torch.Tensor], attention_mask: Optional[Tensor] = None) -> torch.Tensor:
         """
         Forward pass of the ConcatCategoricalFeatureEmbedder. Embeds the input indices for each 
         categorical feature and concatenates them into a single tensor.
 
         Args:
             categorical_inputs (List[torch.Tensor]): A list of tensors where each tensor contains
-            integer indices of the categorical features in a batch.
-
+                                                    integer indices of the categorical features in a batch.
+            attention_mask (Optional[torch.Tensor]): An optional mask tensor indicating which positions should be
+                                                     attended to and which should not. 
+                                                     The shape is (n_batch, seq_len)
         Returns:
             torch.Tensor: A tensor containing the concatenated embeddings of the input features.
         """
         embedded_features = [emb(input) for emb, input in zip(self.embeddings, categorical_inputs)]
         concatenated_embeddings = torch.cat(embedded_features, dim=-1)
         normalized_embeddings = self.layer_norm(concatenated_embeddings)
+
+        if attention_mask is not None:
+            expanded_mask = attention_mask.unsqueeze(-1).expand_as(normalized_embeddings)
+            normalized_embeddings = normalized_embeddings * expanded_mask
+
         return normalized_embeddings
+
 
 class SumCategoricalFeatureEmbedder(nn.Module):
     def __init__(self, categorical_sizes, embedding_dim):
