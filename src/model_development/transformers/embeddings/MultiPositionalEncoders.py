@@ -1,9 +1,8 @@
-from PositionalEncoders import ArbitraryPositionalEncoder, PositionalEncoder
+from .PositionalEncoders import ArbitraryPositionalEncoder, PositionalEncoder
 
 import torch
 import torch.nn as nn
 from typing import List, Optional
-
 
 class MultiPositionalEncoder(nn.Module):
     def __init__(self, max_lengths, embedding_dims):
