@@ -6,8 +6,10 @@ __pycache__/
 # C extensions
 *.so
 
-# Personal
+# private development
 development/
+# virtual env
+env_deeplearning_development/
 
 # Distribution / packaging
 .Python
