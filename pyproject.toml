@@ -9,10 +9,10 @@ description = "Personal Deep Learning Module"
 authors = [{name = "Sisung Kim"}]
 
 [project.dependencies]
-asttokens = ">=2.0.0,<3.0.0"
-colorama = ">=0.4.0,<1.0.0"
-matplotlib = ">=3.0.0,<4.0.0"
-numpy = ">=1.18.0,<2.0.0"
-pandas = ">=1.0.0,<2.0.0"
-seaborn = ">=0.10.0,<1.0.0"
-torch = ">=2.0.0,<3.0.0"
+- "asttokens >=2.0.0, <3.0.0"
+- "colorama >=0.4.0, <1.0.0"
+- "matplotlib >=3.0.0, <4.0.0"
+- "numpy >=1.18.0, <2.0.0"
+- "pandas >=1.0.0, <2.0.0"
+- "seaborn >=0.10.0, <1.0.0"
+- "torch >=2.0.0, <3.0.0"
