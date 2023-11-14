@@ -1,13 +1,4 @@
 [build-system]
-requires = ["setuptools", "wheel"]
+requires = ["setuptools>=42", "wheel"]
 build-backend = "setuptools.build_meta"
 
-[project]
-name = "DeepLearningDevelopment"
-version = "0.1.3"
-description = "Personal Deep Learning Module"
-authors = [{name = "Sisung Kim"}]
-dependencies = [
-    "numpy>=1,<2",
-    "torch>=2,<3",
-]
