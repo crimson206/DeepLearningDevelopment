@@ -42,14 +42,14 @@ class AssumbledEmbedder(nn.Module):
 
         embeddings = []
 
-        if split_categorical_ids:
+        if split_categorical_ids is not None:
             embeddings.append(self.categorical_embedder.forward(split_categorical_ids, attention_mask))
-        if continuous_feature:
+        if continuous_feature is not None:
             embeddings.append(self.continuous_embedder.forward(continuous_feature, attention_mask))
-        if skip_embedding:
+        if skip_embedding is not None:
             embeddings.append(skip_embedding)
 
-        combined_embedding = torch.cat(embeddings, dim=1)
+        combined_embedding = torch.cat(embeddings, dim=2)
 
         final_embedding = combined_embedding + pos_embedding
 
