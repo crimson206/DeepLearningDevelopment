@@ -49,7 +49,7 @@ class AssumbledEmbedder(nn.Module):
         if skip_embedding:
             embeddings.append(skip_embedding)
 
-        combined_embedding = torch.cat([embeddings], dim=1)
+        combined_embedding = torch.cat(embeddings, dim=1)
 
         final_embedding = combined_embedding + pos_embedding
 
