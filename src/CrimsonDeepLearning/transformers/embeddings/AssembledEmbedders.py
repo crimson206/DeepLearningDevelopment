@@ -1,6 +1,8 @@
 import torch
 import torch.nn as nn
-from embeddings import ConcatCategoricalFeatureEmbedder, ContinuousFeatureEmbedder, MultiArbitraryPositionalEncoder
+from .CategoricalFeatureEmbedders import ConcatCategoricalFeatureEmbedder
+from .ContinuousFeatureEmbedder import ContinuousFeatureEmbedder
+from .MultiPositionalEncoders import MultiArbitraryPositionalEncoder
 from typing import List
 
 class AssumbledEmbedder(nn.Module):
