@@ -55,8 +55,9 @@ class MultiArbitraryPositionalEncoder(nn.Module):
         Returns:
             torch.Tensor: A tensor containing the concatenated positional encodings for all tensors in positional_ids.
         """
-        encoded_features = [encoding(pos_id.long()) for encoding, pos_id in zip(self.encodings, positional_ids)]
-        combined_encoding = torch.cat(encoded_features, dim=-1)
+        device = positional_ids[0].device
+        encoded_features = [encoding(pos_id.to(device).long()) for encoding, pos_id in zip(self.encodings, positional_ids)]
+        combined_encoding = torch.cat(encoded_features, dim=-1).to(device)
 
         if attention_mask is not None:
             expanded_mask = attention_mask.unsqueeze(-1).expand_as(combined_encoding)
