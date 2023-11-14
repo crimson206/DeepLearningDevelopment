@@ -5,7 +5,7 @@ from .ContinuousFeatureEmbedder import ContinuousFeatureEmbedder
 from .MultiPositionalEncoders import MultiArbitraryPositionalEncoder
 from typing import List
 
-class AssumbledEmbedder(nn.Module):
+class AssembledEmbedder(nn.Module):
     def __init__(
         self,
         pos_max_lengths: List[int],
@@ -15,7 +15,7 @@ class AssumbledEmbedder(nn.Module):
         continuous_feature_in: int=None,
         continuous_feature_out: int=None,
     ):
-        super(AssumbledEmbedder, self).__init__()
+        super(AssembledEmbedder, self).__init__()
 
         self.pos_emb = MultiArbitraryPositionalEncoder(pos_max_lengths, pos_embedding_dims)
 
