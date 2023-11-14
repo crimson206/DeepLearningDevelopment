@@ -45,7 +45,7 @@ class AssumbledEmbedder(nn.Module):
         if split_categorical_ids:
             embeddings.append(self.categorical_embedder.forward(split_categorical_ids, attention_mask))
         if continuous_feature:
-            embeddings.append(self.continuous_embedder.forward(continuous_feature))
+            embeddings.append(self.continuous_embedder.forward(continuous_feature, attention_mask))
         if skip_embedding:
             embeddings.append(skip_embedding)
 
