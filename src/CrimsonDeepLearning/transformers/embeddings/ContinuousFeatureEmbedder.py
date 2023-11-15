@@ -21,7 +21,7 @@ class ContinuousFeatureEmbedder(nn.Module):
         self.linear = nn.Linear(input_dim, output_dim)
         self.layer_norm = nn.LayerNorm(output_dim)
         
-    def forward(self, x: Tensor, attention_mask: Optional[Tensor] = None) -> Tensor:
+    def forward(self, continuous_feature: Tensor, attention_mask: Optional[Tensor] = None) -> Tensor:
         """
         Forward pass of the embedder.
 
@@ -39,8 +39,8 @@ class ContinuousFeatureEmbedder(nn.Module):
             Tensor: The output tensor containing the embedded features after layer normalization.
                     Shape: (n_batch, n_seq, output_dim).
         """
-        x = x.float()
-        embedded_x = self.linear(x)
+        continuous_feature = continuous_feature.float()
+        embedded_x = self.linear(continuous_feature)
         normalized_embedded_x = self.layer_norm(embedded_x)
 
         if attention_mask is not None:

@@ -36,16 +36,31 @@ class AssembledEmbedder(nn.Module):
         continuous_feature: torch.Tensor=None,
         skip_embedding: torch.Tensor=None,
         attention_mask: torch.Tensor=None,
+        seq_len: int=None,
     ) -> torch.Tensor:
 
-        pos_embedding = self.pos_emb.forward(split_position_ids, attention_mask)
+        pos_embedding = self.pos_emb.forward(
+            positional_ids=split_position_ids,
+            attention_mask=attention_mask
+        )
 
         embeddings = []
 
         if split_categorical_ids is not None:
-            embeddings.append(self.categorical_embedder.forward(split_categorical_ids, attention_mask))
+            embeddings.append(
+                self.categorical_embedder.forward(
+                categorical_inputs=split_categorical_ids,
+                seq_len=seq_len,
+                attention_mask=attention_mask
+                )
+            )
         if continuous_feature is not None:
-            embeddings.append(self.continuous_embedder.forward(continuous_feature, attention_mask))
+            embeddings.append(
+                self.continuous_embedder.forward(
+                    continuous_feature=continuous_feature,
+                    attention_mask=attention_mask
+                )
+            )
         if skip_embedding is not None:
             embeddings.append(skip_embedding)
 
