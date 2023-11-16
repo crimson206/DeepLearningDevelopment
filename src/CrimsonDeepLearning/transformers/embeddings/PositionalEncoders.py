@@ -35,6 +35,7 @@ class ArbitraryPositionalEncoder(nn.Module):
         A 3D torch.Tensor of shape (n_batch, n_seq, d_emb) containing the positional encodings for the batch.
         """
         # Get the positional encodings for the batch
+        self.encodings = self.encodings.to(input_seqs.device)
         batch_encodings = torch.stack([self.encodings[idx] for idx in input_seqs])
 
         return batch_encodings
