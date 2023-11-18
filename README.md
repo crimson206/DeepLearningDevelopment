@@ -8,13 +8,13 @@ Currently, most of the code is related to transformers because I am only partici
 # Demo Version
 
 You can install a demo version.
-Currently, most of modules are transformer-based.
+Currently, most of modules are transformer-based.\
 I will upload example usages soon.
 
-use the line to install this project
+use the line to install this project\
 pip install git+https://github.com/crimson206/DeepLearningDevelopment@0.1.4
 
-useful embedding moduels are in
+useful embedding moduels are in\
 from CrimsonDeepLearning.transformers.embeddings import ...
 
 # Recommended Notebooks
