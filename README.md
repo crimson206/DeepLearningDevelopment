@@ -26,7 +26,7 @@ Useful embedding modules can be found in:
 
 # Recommended Notebooks
 - Params Shaker: This notebook is designed to search for the global optimum with randomness.  
-  [Params Shaker Notebook](https://github.com/crimson206/DeepLearningDevelopment/blob/main/src/global_optimum/shakers/z_ParamsShaker.ipynb)
+  [Params Shaker Notebook]([https://github.com/crimson206/DeepLearningDevelopment/blob/main/src/global_optimum/shakers/z_ParamsShaker.ipynb](https://github.com/crimson206/DeepLearningDevelopment/blob/main/src/global_optimum/shakers/z_ParamsShaker.ipynb))
 
 - MultiPositionalEncoder: Does your problem involve multiple positions? Are you interested in understanding the attention mechanism better? Then this notebook is for you.  
-  [MultiPositionalEncoder Notebook](https://github.com/crimson206/DeepLearningDevelopment/blob/main/src/model_development/transformers/embeddings/z_MultiPositionalEncoders.ipynb)
+  [MultiPositionalEncoder Notebook]([https://github.com/crimson206/DeepLearningDevelopment/blob/main/src/model_development/transformers/embeddings/z_MultiPositionalEncoders.ipynb](https://github.com/crimson206/DeepLearningDevelopment/blob/main/src/CrimsonDeepLearning/transformers/embeddings/z_MultiPositionalEncoders.ipynb)https://github.com/crimson206/DeepLearningDevelopment/blob/main/src/CrimsonDeepLearning/transformers/embeddings/z_MultiPositionalEncoders.ipynb)
