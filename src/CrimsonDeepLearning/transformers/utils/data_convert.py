@@ -22,3 +22,7 @@ def generate_sliding_window_sequences(data: torch.Tensor, sequence_length: int, 
             break
         sequences.append(data[start_idx:end_idx])
     return torch.stack(sequences)
+
+def split_tensor(tensor):
+    split_tensor = [tensor[:,:,i] for i in range(tensor.shape[-1])]
+    return split_tensor

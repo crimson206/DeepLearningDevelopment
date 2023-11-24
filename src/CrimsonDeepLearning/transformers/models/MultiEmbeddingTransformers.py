@@ -175,8 +175,8 @@ class MultiEmbeddingTransformer(nn.Module):
         split_position_ids: List[torch.Tensor],
         split_categorical_ids: List[torch.Tensor]=None,
         sum_categorical_ids: torch.Tensor=None,
-        continuous_feature: torch.Tensor=None,
         skip_embedding: torch.Tensor=None,
+        continuous_feature: torch.Tensor=None,
         attention_mask: torch.Tensor=None,
     ):
         # split_position_ids shape (n_batch, n_seq) * len(pos_max_lengths)
