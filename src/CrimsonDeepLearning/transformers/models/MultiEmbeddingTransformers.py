@@ -2,16 +2,6 @@ import torch
 import torch.nn as nn
 from typing import List
 
-import importlib
-
-# Import the Hugging Face transformers library under a different name
-hf_transformers = importlib.import_module("transformers")
-
-# Now you can use `hf_transformers` to refer to the Hugging Face library
-AutoConfig = hf_transformers.AutoConfig
-AutoModel = hf_transformers.AutoModel
-
-#from transformers import AutoConfig, AutoModel
 from ..embeddings import AssembledEmbedder
 
 class EncoderTransformer(nn.Module):
@@ -87,11 +77,13 @@ class MultiEmbeddingTransformerBuilder():
             model_name,
             config,
             multi_emb_transformer_input_frame,
+            autoconfig_from_pretrained,
+            automodel_from_config,
             ):
-        auto_config = AutoConfig.from_pretrained(model_name)
+        auto_config = autoconfig_from_pretrained(model_name)
         auto_config.update(config)
 
-        transformer = AutoModel.from_config(auto_config)
+        transformer = automodel_from_config(auto_config)
 
         enc_transformer = EncoderTransformer(transformer)
         multi_emb_transformer = MultiEmbeddingTransformer(
