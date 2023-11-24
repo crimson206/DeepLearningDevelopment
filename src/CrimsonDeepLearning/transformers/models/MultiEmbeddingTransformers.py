@@ -161,7 +161,7 @@ class MultiEmbeddingTransformer(nn.Module):
         self.d_emb = sum(pos_embedding_dims)
 
         self.skip_emb_size = self.d_emb - sum(categorical_emb_dims)
-        if continuous_feature_in is None:
+        if continuous_feature_in is not None:
             self.skip_emb_size -= continuous_feature_in
 
         # Check if the calculated skip embedding size matches the provided skip embedding size
