@@ -50,7 +50,6 @@ class AssembledEmbedder(nn.Module):
             embeddings.append(
                 self.categorical_embedder.forward(
                 categorical_inputs=split_categorical_ids,
-                seq_len=seq_len,
                 attention_mask=attention_mask
                 )
             )
