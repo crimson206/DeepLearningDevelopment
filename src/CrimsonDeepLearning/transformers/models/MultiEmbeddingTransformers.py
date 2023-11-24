@@ -1,7 +1,17 @@
 import torch
 import torch.nn as nn
 from typing import List
-from transformers import AutoConfig, AutoModel
+
+import importlib
+
+# Import the Hugging Face transformers library under a different name
+hf_transformers = importlib.import_module("transformers")
+
+# Now you can use `hf_transformers` to refer to the Hugging Face library
+AutoConfig = hf_transformers.AutoConfig
+AutoModel = hf_transformers.AutoModel
+
+#from transformers import AutoConfig, AutoModel
 from ..embeddings import AssembledEmbedder
 
 class EncoderTransformer(nn.Module):
@@ -162,7 +172,7 @@ class MultiEmbeddingTransformer(nn.Module):
 
         self.skip_emb_size = self.d_emb - sum(categorical_emb_dims)
         if continuous_feature_in is not None:
-            self.skip_emb_size -= continuous_feature_in
+            self.skip_emb_size -= continuous_feature_out
 
         # Check if the calculated skip embedding size matches the provided skip embedding size
         if self.skip_emb_size != skip_emb_size:
@@ -199,8 +209,6 @@ class MultiEmbeddingTransformer(nn.Module):
             sum_categorical_embedding = self.sum_embedder(sum_categorical_ids)
             assembled_embedding = assembled_embedding + sum_categorical_embedding
 
+        transformer_output = self.enc_transformer(embedding=assembled_embedding, attention_mask=attention_mask)
 
-
-        hidden_states = self.enc_transformer(embedding=assembled_embedding, attention_mask=attention_mask)
-
-        return hidden_states
+        return transformer_output
