@@ -132,12 +132,12 @@ class VAEformer(nn.Module):
         skip_embedding = self.vae.reparameterize(mu, logvar)
 
         transformer_output = self.multi_embedding_transformer(
-            split_position_ids,
-            split_categorical_ids,
-            sum_categorical_ids,
-            continuous_feature,
-            skip_embedding,
-            attention_mask,
+            split_position_ids=split_position_ids,
+            split_categorical_ids=split_categorical_ids,
+            sum_categorical_ids=sum_categorical_ids,
+            continuous_feature=continuous_feature,
+            skip_embedding=skip_embedding,
+            attention_mask=attention_mask,
         )
 
         hidden_states = transformer_output.hidden_states
