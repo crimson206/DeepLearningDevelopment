@@ -78,8 +78,6 @@ class MultiEmbeddingTransformerBuilder():
             model_name,
             config,
             multi_emb_transformer_input_frame,
-            autoconfig_from_pretrained,
-            automodel_from_config,
             ):
         auto_config = AutoConfig.from_pretrained(model_name)
         auto_config.update(config)
