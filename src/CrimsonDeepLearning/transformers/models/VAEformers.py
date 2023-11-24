@@ -129,8 +129,7 @@ class VAEformer(nn.Module):
 
         n_seq = split_position_ids[0].shape[1]
         mu, logvar = self.vae.encode(vae_feature)
-        z = self.vae.reparameterize(mu, logvar)
-        skip_embedding = z.unsqueeze(1).expand(-1, n_seq, -1)
+        skip_embedding = self.vae.reparameterize(mu, logvar)
 
         transformer_output = self.multi_embedding_transformer(
             split_position_ids,
