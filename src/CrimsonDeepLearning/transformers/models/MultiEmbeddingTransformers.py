@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 from typing import List
 
+from transformers import AutoConfig, AutoModel
 from ..embeddings import AssembledEmbedder
 
 class EncoderTransformer(nn.Module):
@@ -80,10 +81,10 @@ class MultiEmbeddingTransformerBuilder():
             autoconfig_from_pretrained,
             automodel_from_config,
             ):
-        auto_config = autoconfig_from_pretrained(model_name)
+        auto_config = AutoConfig.from_pretrained(model_name)
         auto_config.update(config)
 
-        transformer = automodel_from_config(auto_config)
+        transformer = AutoModel.from_config(auto_config)
 
         enc_transformer = EncoderTransformer(transformer)
         multi_emb_transformer = MultiEmbeddingTransformer(
