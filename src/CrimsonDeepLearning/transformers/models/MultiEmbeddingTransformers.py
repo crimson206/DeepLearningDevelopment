@@ -187,17 +187,19 @@ class MultiEmbeddingTransformer(nn.Module):
         # attention mask shape (n_batch, n_seq)
 
         assembled_embedding = self.assembled_embedder.forward(
-            split_position_ids, 
-            split_categorical_ids, 
-            continuous_feature, 
-            skip_embedding, 
-            attention_mask
+            split_position_ids=split_position_ids, 
+            split_categorical_ids=split_categorical_ids, 
+            continuous_feature=continuous_feature,
+            skip_embedding=skip_embedding, 
+            attention_mask=attention_mask
         )
 
         if sum_categorical_ids is not None:
             # (n_batch, n_seq, d_emb)
             sum_categorical_embedding = self.sum_embedder(sum_categorical_ids)
             assembled_embedding = assembled_embedding + sum_categorical_embedding
+
+
 
         hidden_states = self.enc_transformer(embedding=assembled_embedding, attention_mask=attention_mask)
 

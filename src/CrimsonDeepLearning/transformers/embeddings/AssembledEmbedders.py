@@ -36,7 +36,6 @@ class AssembledEmbedder(nn.Module):
         continuous_feature: torch.Tensor=None,
         skip_embedding: torch.Tensor=None,
         attention_mask: torch.Tensor=None,
-        seq_len: int=None,
     ) -> torch.Tensor:
 
         pos_embedding = self.pos_emb.forward(
