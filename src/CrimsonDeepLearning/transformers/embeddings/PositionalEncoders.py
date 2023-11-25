@@ -1,6 +1,8 @@
 import torch
 import torch.nn as nn
 import math
+from torch import Tensor
+from typing import Tuple
 
 class PositionalEncoder(nn.Module):
     def __init__(self, d_model, max_len):
@@ -18,13 +20,13 @@ class PositionalEncoder(nn.Module):
         return x
 
 class ArbitraryPositionalEncoder(nn.Module):
-    def __init__(self, max_pos_len, d_emb):
+    def __init__(self, max_pos_len: int, d_emb: int) -> None:
         super(ArbitraryPositionalEncoder, self).__init__()
         self.d_emb = d_emb
         self.max_pos_len = max_pos_len
         self.encodings = get_sinusoidal_encoding(self.max_pos_len + 1, self.d_emb)
 
-    def forward(self, input_seqs):
+    def forward(self, input_seqs: Tensor) -> Tensor:
         """
         Apply sinusoidal positional encoding to the input batch of sequences using custom positions.
 
@@ -40,7 +42,7 @@ class ArbitraryPositionalEncoder(nn.Module):
 
         return batch_encodings
 
-def get_sinusoidal_encoding(max_seq_len, d_emb):
+def get_sinusoidal_encoding(max_seq_len: int, d_emb: int) -> Tensor:
     """
     Generate sinusoidal positional encodings for a given sequence length and dimensionality.
 
