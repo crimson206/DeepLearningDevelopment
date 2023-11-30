@@ -50,11 +50,16 @@ class SizePreservingBlocks(nn.Module):
     Output tensor shape:
     (n_batch, hidden_sizes[-1], height, width)
     """
-    def __init__(self, hidden_channels: List[int], activation: nn.Module, use_residual: bool = False) -> None:
+    def __init__(self, hidden_channels: List[int], activation: nn.Module, dropout_rate: float = 0.1, use_residual: bool = False) -> None:
         super(SizePreservingBlocks, self).__init__()
         layers: List[nn.Module] = []
         for i in range(len(hidden_channels) - 1):
-            layers.append(SizePreservingBlock(hidden_channels[i], hidden_channels[i+1], activation, use_residual))
+            layers.append(SizePreservingBlock(
+                in_channel=hidden_channels[i],
+                out_channel=hidden_channels[i+1],
+                activation=activation,
+                dropout_rate=dropout_rate,
+                use_residual=use_residual))
         self.res_blocks: nn.Sequential = nn.Sequential(*layers)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
