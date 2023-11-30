@@ -53,7 +53,7 @@ class CommoncoderLayer(nn.Module):
     The forward pass applies the sequence of intermediate operations followed by the final CommonBlock operation. 
     It can optionally return intermediate results for further processing or analysis.
     """
-    def __init__(self, hidden_channels, output_channel, module, activation, dropout_rate) -> None:
+    def __init__(self, hidden_channels:List[int], output_channel:int, module:nn.Module, activation:nn.Module=nn.ReLU(), dropout_rate:float=0.1) -> None:
         super(CommoncoderLayer, self).__init__()
         self.flatsample = SizePreservingBlocks(hidden_channels=hidden_channels, activation=activation, dropout_rate=dropout_rate, use_residual=True)
         self.block = CommonBlock(output_channel=output_channel, module=module, activation=activation, dropout_rate=dropout_rate)
