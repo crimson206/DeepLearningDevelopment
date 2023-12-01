@@ -76,7 +76,9 @@ class Critic(nn.Module):
         input_tensor = self.conv(input_tensor)
 
         if self.final is None:
+            device = input_tensor.device
             self.final = EqualizedLinear(in_feature=math.prod(input_tensor.shape[1:]), out_feature=1)
+            self.final.to(device)
 
         input_tensor = input_tensor.reshape(input_tensor.shape[0], -1)
         return self.final(input_tensor)
