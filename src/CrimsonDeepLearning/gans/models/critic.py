@@ -90,7 +90,5 @@ class Critic(nn.Module):
 
             output.shape:(n_batch, 1, height, width).
         """
-        batch_statistics = (
-            torch.std(input_tensor, dim=0).mean().repeat(input_tensor.shape[0], 1, input_tensor.shape[2], input_tensor.shape[3])
-        )
+        batch_statistics = torch.std(input_tensor, dim=0).mean().repeat(input_tensor.shape[0], 1, input_tensor.shape[2], input_tensor.shape[3])
         return batch_statistics
