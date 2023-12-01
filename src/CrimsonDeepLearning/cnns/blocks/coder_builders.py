@@ -54,7 +54,7 @@ class EncoderSetupHolder():
         constructor = nn.MaxPool2d if mechanism=="max" else nn.AvgPool2d
         for _ in hidden_channels_list:
             down_modules.append(
-                constructor(kernel_size=2)
+                constructor(kernel_size=2, stride=2)
             )
         return down_modules
 
@@ -78,7 +78,7 @@ def generate_encoder(input_channel, size="small", mechanism="conv", activation=n
     elif mechanism=="avg_pool":
         modules = encoder_setup_holder.generate_pooler_donw_modules(
             hidden_channels_list=hidden_channels_list,
-            mechanism="avg",
+            mechanism="avg", 
         )
     
     coder_builder = CoderBuilder()
