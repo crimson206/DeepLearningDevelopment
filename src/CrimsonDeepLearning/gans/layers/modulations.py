@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from CrimsonDeepLearning.gans.functional_layers.equalized_layers import EqualizedWeight
+from CrimsonDeepLearning.gans.layers.equalized_layers import EqualizedWeight
     
 class Conv2dWeightModulate(nn.Module):
     def __init__(self, in_feature, out_feature, kernel_size, demodulate=True, eps=1e-8):

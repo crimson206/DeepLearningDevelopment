@@ -2,10 +2,10 @@
 import torch
 import torch.nn as nn
 
-from CrimsonDeepLearning.gans.functional_layers.equalized_layers import EqualizedLinear
+from CrimsonDeepLearning.gans.layers.equalized_layers import EqualizedLinear
 
 class MappingNetwork(nn.Module):
-    def __init__(self, n_z_latent: int = 256, n_w_latent: int = 256, hidden_sizes: list[int] = [256] * 8, activation: nn.Module = nn.ReLU()):
+    def __init__(self, n_z_latent: int = 256, n_w_latent: int = 256, hidden_sizes: list[int] = [256] * 8, activation: nn.Module = nn.LeakyReLU(negative_slope=0.2, inplace=True)):
         super().__init__()
 
         layers = []

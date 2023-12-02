@@ -6,7 +6,7 @@ import torch.nn as nn
 import sys
 # Append the directory of your project to sys.path
 
-from CrimsonDeepLearning.gans.functional_layers.equalized_layers import EqualizedConv2d, EqualizedLinear
+from CrimsonDeepLearning.gans.layers.equalized_layers import EqualizedConv2d, EqualizedLinear
 
 class CriticBlock(nn.Module):
     def __init__(self, in_features, out_features):

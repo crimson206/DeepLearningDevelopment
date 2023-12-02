@@ -2,8 +2,8 @@ import torch
 import torch.nn as nn
 from typing import Optional
 
-from CrimsonDeepLearning.gans.functional_layers.equalized_layers import EqualizedLinear
-from CrimsonDeepLearning.gans.functional_layers.modulations import Conv2dWeightModulate
+from CrimsonDeepLearning.gans.layers.equalized_layers import EqualizedLinear
+from CrimsonDeepLearning.gans.layers.modulations import Conv2dWeightModulate
 
 class StyleBlock(nn.Module):
     """
@@ -20,7 +20,7 @@ class StyleBlock(nn.Module):
         self.scale_noise = nn.Parameter(torch.zeros(1))
         self.bias = nn.Parameter(torch.zeros(output_channel))
 
-        self.activation = nn.LeakyReLU(0.2, True)
+        self.activation = nn.LeakyReLU(negative_slope=0.2, inplace=True)
 
     def forward(self, feature_map: torch.Tensor, w_latent: torch.Tensor, add_noise=True) -> torch.Tensor:
         """
@@ -50,8 +50,8 @@ class StyleBlock(nn.Module):
 
 
 class To_RGB(StyleBlock):
-    def __init__(self, n_w_latent: int, input_channel: int):
-        super().__init__(n_w_latent, input_channel, output_channel=3, kernel_size=1, demodulate=False)
+    def __init__(self, n_w_latent: int, input_channel: int, output_channel: int=3):
+        super().__init__(n_w_latent, input_channel, output_channel=output_channel, kernel_size=1, demodulate=False)
 
     def forward(self, feature_map: torch.Tensor, w_latent: torch.Tensor) -> torch.Tensor:
         """

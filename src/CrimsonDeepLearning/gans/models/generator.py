@@ -11,7 +11,6 @@ class GeneratorBlock(nn.Module):
         if hidden_channels is None:
             hidden_channels = [output_channel]
 
-        # hidden_channels의 길이에 기반하여 style_block_depth 계산
         channels = [input_channel] + hidden_channels + [output_channel]
 
         self.style_blocks:list[StyleBlock] = nn.ModuleList(

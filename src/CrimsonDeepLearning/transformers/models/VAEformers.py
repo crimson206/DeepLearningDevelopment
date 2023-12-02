@@ -127,7 +127,6 @@ class VAEformer(nn.Module):
         attention_mask: torch.Tensor=None,
     ):
 
-        n_seq = split_position_ids[0].shape[1]
         mu, logvar = self.vae.encode(vae_feature)
         skip_embedding = self.vae.reparameterize(mu, logvar)
 
