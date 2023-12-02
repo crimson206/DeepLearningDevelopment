@@ -2,17 +2,52 @@ import math
 
 import torch
 import torch.nn as nn
-
+import copy
 import sys
 # Append the directory of your project to sys.path
 
 from CrimsonDeepLearning.gans.layers.equalized_layers import EqualizedConv2d, EqualizedLinear
 
-class CriticBlock(nn.Module):
-    def __init__(self, in_features, out_features):
+import torch.nn.functional as F
+class Smooth(nn.Module):
+    def __init__(self):
         super().__init__()
+        kernel = [[1, 2, 1],
+                  [2, 4, 2],
+                  [1, 2, 1]]
+        kernel = torch.tensor([[kernel]], dtype=torch.float)
+        kernel /= kernel.sum()
+        self.kernel = nn.Parameter(kernel, requires_grad=False)
+        self.pad = nn.ReplicationPad2d(1)
+
+    def forward(self, x: torch.Tensor):
+        b, c, h, w = x.shape
+        x = x.view(-1, 1, h, w)
+        x = self.pad(x)
+        x = F.conv2d(x, self.kernel)
+        return x.view(b, c, h, w)
+
+class DownSample(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.smooth = Smooth()
+
+    def forward(self, x: torch.Tensor):
+        x = self.smooth(x)
+        return F.interpolate(x, (x.shape[2] // 2, x.shape[3] // 2), mode='bilinear', align_corners=False)
+
+
+class CriticBlock(nn.Module):
+    def __init__(self, in_features, out_features, down_sample_mechanism="smooth"):
+        super().__init__()
+
+        if down_sample_mechanism=="smooth":
+            down_sample = DownSample()
+        elif down_sample_mechanism=="average":
+            down_sample = nn.AvgPool2d(kernel_size=2, stride=2)
+
         self.residual_down_sample = nn.Sequential(
-            nn.AvgPool2d(kernel_size=2, stride=2),
+            copy.deepcopy(down_sample),
             EqualizedConv2d(in_features, out_features, kernel_size=1)
         )
 
@@ -23,10 +58,7 @@ class CriticBlock(nn.Module):
             nn.LeakyReLU(0.2, True),
         )
 
-        self.down_sample = nn.AvgPool2d(
-            kernel_size=2, stride=2
-        )
-
+        self.down_sample = copy.deepcopy(down_sample)
         self.scale = 1 / math.sqrt(2)
 
     def forward(self, input_tensor):

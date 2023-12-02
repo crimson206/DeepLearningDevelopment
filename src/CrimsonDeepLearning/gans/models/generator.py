@@ -46,21 +46,21 @@ class Generator(nn.Module):
     def __init__(self, log_resolution, n_w_latent, start_feature = 32, max_feature = 256):
         super().__init__()
 
-        features = [min(max_feature, start_feature * (2 ** i)) for i in range(log_resolution - 2, -1, -1)]
-        self.n_blocks = len(features) - 1
+        self.features = [min(max_feature, start_feature * (2 ** i)) for i in range(log_resolution - 2, -1, -1)]
+        self.n_blocks = len(self.features) - 1
 
-        self.initial_constant = nn.Parameter(torch.randn((1, features[0], 4, 4)))
+        self.initial_constant = nn.Parameter(torch.randn((1, self.features[0], 4, 4)))
 
         self.style_block = StyleBlock(
             n_w_latent=n_w_latent,
-            input_channel=features[0],
-            output_channel=features[0],
+            input_channel=self.features[0],
+            output_channel=self.features[0],
             kernel_size=3,
             demodulate=True
         )
         
-        self.to_rgb = To_RGB(n_w_latent=n_w_latent, input_channel=features[0])
-        self.blocks:list[GeneratorBlock] = nn.ModuleList([GeneratorBlock(n_w_latent, features[i], features[i+1]) for i in range(self.n_blocks)])
+        self.to_rgb = To_RGB(n_w_latent=n_w_latent, input_channel=self.features[0])
+        self.blocks:list[GeneratorBlock] = nn.ModuleList([GeneratorBlock(n_w_latent, self.features[i], self.features[i+1]) for i in range(self.n_blocks)])
 
     def forward(self, w_latent, return_whole_w_letent=False):
 
