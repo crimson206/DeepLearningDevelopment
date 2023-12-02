@@ -22,6 +22,10 @@ class CoderBuilder(nn.Module):
         return Commoncoder(coder_layers=coder_layers)
 
 class EncoderSetupHolder():
+    '''
+    Decrease in the image size
+    Increase in the number of features
+    '''
     def __init__(self, input_channel):
         self.small_hidden_channels_list = [
             [input_channel, 64, 128],
@@ -58,38 +62,37 @@ class EncoderSetupHolder():
             )
         return down_modules
 
-def generate_encoder(input_channel, size="small", mechanism="conv", activation=nn.ReLU()):
+    def generate_encoder(self, size="small", mechanism="conv", activation=nn.ReLU()):
 
-    encoder_setup_holder = EncoderSetupHolder(input_channel=input_channel)
-    hidden_channels_list = encoder_setup_holder.small_hidden_channels_list if size=="small" else encoder_setup_holder.medium_hidden_channels_list
+        hidden_channels_list = self.small_hidden_channels_list if size=="small" else self.medium_hidden_channels_list
 
-    if mechanism=="conv":
-        modules = encoder_setup_holder.generate_conv_down_modules(
+        if mechanism=="conv":
+            modules = self.generate_conv_down_modules(
+                hidden_channels_list=hidden_channels_list,
+                kernel_size=3,
+                stride=2,
+                padding=1
+            )
+        elif mechanism=="max_pool":
+            modules = self.generate_pooler_donw_modules(
+                hidden_channels_list=hidden_channels_list,
+                mechanism="max",
+            )
+        elif mechanism=="avg_pool":
+            modules = self.generate_pooler_donw_modules(
+                hidden_channels_list=hidden_channels_list,
+                mechanism="avg", 
+            )
+        
+        coder_builder = CoderBuilder()
+
+        encoder = coder_builder.build_coder(
             hidden_channels_list=hidden_channels_list,
-            kernel_size=3,
-            stride=2,
-            padding=1
+            modules=modules, 
+            activation=activation
         )
-    elif mechanism=="max_pool":
-        modules = encoder_setup_holder.generate_pooler_donw_modules(
-            hidden_channels_list=hidden_channels_list,
-            mechanism="max",
-        )
-    elif mechanism=="avg_pool":
-        modules = encoder_setup_holder.generate_pooler_donw_modules(
-            hidden_channels_list=hidden_channels_list,
-            mechanism="avg", 
-        )
-    
-    coder_builder = CoderBuilder()
 
-    encoder = coder_builder.build_coder(
-        hidden_channels_list=hidden_channels_list,
-        modules=modules, 
-        activation=activation
-    )
-
-    return encoder
+        return encoder
 
 class DecoderSetupHolder():
     def __init__(self, output_channel):
