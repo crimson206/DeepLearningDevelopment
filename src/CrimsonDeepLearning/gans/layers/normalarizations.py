@@ -1,4 +1,5 @@
 import torch
+import torch.nn as nn
 
 def _compute_mean_std(
     feats: torch.Tensor, eps:float=1e-8
@@ -27,4 +28,14 @@ def adaptive_instance_normalize(
     normalized = (s_std * (content_feature - c_mean) / c_std) + s_mean
 
     return normalized
-     
+
+class AdaIn(nn.Module):
+    def __init__(self, n_channel):
+        super().__init__()
+        self.norm = nn.InstanceNorm2d(n_channel)
+        
+    def forward(self, image, style):
+        factor, bias = style[:,:,None,None].chunk(2, 1)
+        result = self.norm(image)
+        result = result * factor + bias  
+        return result
