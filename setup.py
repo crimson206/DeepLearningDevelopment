@@ -10,6 +10,6 @@ setup(
     install_requires=[
         "numpy",
         "torch",
-        "pyplot"
+        "plotly",
     ],
 )
