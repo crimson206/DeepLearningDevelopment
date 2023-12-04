@@ -8,13 +8,13 @@ class Crimsonformer(nn.Module):
     def __init__(
         self,
         multi_embedding_transformer: MultiEmbeddingTransformer,
-        regression_heads: nn.ModuleList(list[RegressionHead]),
+        regression_heads: list[RegressionHead],
     ):
         super(Crimsonformer, self).__init__()
         self.multi_embedding_transformer = multi_embedding_transformer
         self.base_transformer_config = multi_embedding_transformer.enc_transformer.transformer.config
 
-        self.regression_heads: list[RegressionHead] = regression_heads
+        self.regression_heads: list[RegressionHead] = nn.ModuleList(regression_heads)
 
     def forward(
         self,
