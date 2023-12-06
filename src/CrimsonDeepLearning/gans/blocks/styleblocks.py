@@ -40,7 +40,7 @@ class StyleBlock(nn.Module):
         """
 
         style = self.to_style.forward(w_latent)
-        feature_map = self.apply_style.forward(feature_map, style)
+        feature_map = self.style_apply.forward(feature_map, style)
         if add_noise:
             noise = self._get_noise(feature_map)
             feature_map = feature_map + self.scale_noise[None, :, None, None] * noise
