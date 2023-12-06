@@ -17,10 +17,13 @@ class StyleBlock(nn.Module):
         super().__init__()
 
         self.to_style = EqualizedLinear(n_w_latent, input_channel, bias=1.0)
-        if style_apply_mechanism=="modulatioin":
+        if style_apply_mechanism=="modulation":
             self.style_apply = Conv2dWeightModulate(input_channel, output_channel, kernel_size=kernel_size, demodulate=demodulate)
         elif style_apply_mechanism=="adain":
             self.style_apply = AdaIn(n_channel=input_channel)
+        else:
+            raise ValueError("style_apply should be 'modulation' or 'adain'")
+
         self.scale_noise = nn.Parameter(torch.zeros(1))
         self.bias = nn.Parameter(torch.zeros(output_channel))
 
