@@ -45,6 +45,7 @@ class AdaIn(nn.Module):
         self.bias_fc = EqualizedLinear(in_feature=in_channel, out_feature=out_channel)
         self.conv = EqualizedConv2d(in_feature=in_channel, out_feature=out_channel, kernel_size=3, padding=1)
         self.norm = nn.InstanceNorm2d(out_channel)
+        self._out_channel = out_channel
         
     def forward(self, feature_map, style):
         """
@@ -55,10 +56,10 @@ class AdaIn(nn.Module):
             - output.shape: (n_batch, out_feature, height, width)
         """
 
-        n_batch, n_channel = feature_map.shape[:2]
+        n_batch = feature_map.shape[0]
 
-        scale = self.scale_fc(style).view(n_batch, n_channel, 1, 1)
-        bias = self.bias_fc(style).view(n_batch, n_channel, 1, 1)
+        scale = self.scale_fc(style).view(n_batch, self._out_channel, 1, 1)
+        bias = self.bias_fc(style).view(n_batch, self._out_channel, 1, 1)
 
         feature_map = self.conv.forward(feature_map)
         feature_map = scale * feature_map + bias
