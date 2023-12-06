@@ -13,12 +13,12 @@ class StyleBlock(nn.Module):
 
     output.shape: (n_batch, hidden_sizes[-1], height, width).
     """
-    def __init__(self, n_w_latent: int, input_channel: int, output_channel: int, kernel_size: int = 3, style_apply_mechanism="modulation"):
+    def __init__(self, n_w_latent: int, input_channel: int, output_channel: int, kernel_size: int = 3, style_apply_mechanism="modulation", demodulate=True):
         super().__init__()
 
         self.to_style = EqualizedLinear(n_w_latent, input_channel, bias=1.0)
         if style_apply_mechanism=="modulatioin":
-            self.style_apply = Conv2dWeightModulate(input_channel, output_channel, kernel_size=kernel_size, demodulate=True)
+            self.style_apply = Conv2dWeightModulate(input_channel, output_channel, kernel_size=kernel_size, demodulate=demodulate)
         elif style_apply_mechanism=="adain":
             self.style_apply = AdaIn(n_channel=input_channel)
         self.scale_noise = nn.Parameter(torch.zeros(1))
@@ -55,7 +55,7 @@ class StyleBlock(nn.Module):
 
 class To_RGB(StyleBlock):
     def __init__(self, n_w_latent: int, input_channel: int, output_channel: int=3, style_apply_mechanism="modulation"):
-        super().__init__(n_w_latent, input_channel, output_channel=output_channel, kernel_size=1, style_apply_mechanism=style_apply_mechanism)
+        super().__init__(n_w_latent, input_channel, output_channel=output_channel, kernel_size=1, style_apply_mechanism=style_apply_mechanism, demodulate=False)
 
     def forward(self, feature_map: torch.Tensor, w_latent: torch.Tensor) -> torch.Tensor:
         """
