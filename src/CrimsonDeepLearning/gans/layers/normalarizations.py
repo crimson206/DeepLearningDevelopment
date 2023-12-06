@@ -1,10 +1,18 @@
 import torch
 import torch.nn as nn
+from CrimsonDeepLearning.gans.layers.equalized_layers import EqualizedLinear
 
 def _compute_mean_std(
     feats: torch.Tensor, eps:float=1e-8
 ) -> torch.Tensor:
-    n_batch, n_channel, _, _ = feats.shape
+    """
+    Shape:
+        - features: (n_batch, n_channel, height, weight) or (n_batch, n_channel)
+
+        - output: (n_batch, n_channel, 1, 1)
+    """
+
+    n_batch, n_channel = feats.shape[:2]
 
     feats = feats.view(n_batch, n_channel, -1)
     mean = torch.mean(feats, dim=-1).view(n_batch, n_channel, 1, 1)
@@ -12,30 +20,46 @@ def _compute_mean_std(
     return mean, std
 
 def adaptive_instance_normalize(
-    content_feature: torch.Tensor,
-    style_feature: torch.Tensor,
+    feature_map: torch.Tensor,
+    style: torch.Tensor,
 ) -> torch.Tensor:
     """
     Shape:
         - content_feature: (n_batch, n_channel, height, weight)
-        - style_feature: (n_batch, n_channel, height, weight)
+        - style: (n_batch, n_channel)
         - output: (n_batch, n_channel, height, weight)
     """
 
-    c_mean, c_std = _compute_mean_std(content_feature)
-    s_mean, s_std = _compute_mean_std(style_feature)
+    feature_mean, feature_std = _compute_mean_std(feature_map)
+    style_mean, style_std = _compute_mean_std(style)
 
-    normalized = (s_std * (content_feature - c_mean) / c_std) + s_mean
+    normalized = (style_std * (feature_map - feature_mean) / feature_std) + style_mean
 
     return normalized
+
 
 class AdaIn(nn.Module):
     def __init__(self, n_channel):
         super().__init__()
+        self.scale_fc = EqualizedLinear(in_feature=n_channel, out_feature=n_channel)
+        self.bias_fc = EqualizedLinear(in_feature=n_channel, out_feature=n_channel)
         self.norm = nn.InstanceNorm2d(n_channel)
         
-    def forward(self, image, style):
-        factor, bias = style[:,:,None,None].chunk(2, 1)
-        result = self.norm(image)
-        result = result * factor + bias  
-        return result
+    def forward(self, feature_map, style):
+        """
+        Shape:
+            - feature_map.shape: (n_batch, in_feature, height, width)
+            - style: (n_batch, in_feature)
+
+            - output.shape: (n_batch, out_feature, height, width)
+        """
+
+        n_batch, n_channel = feature_map.shape[:2]
+
+        scale = self.scale_fc(style).view(n_batch, n_channel, 1, 1)
+        bias = self.bias_fc(style).view(n_batch, n_channel, 1, 1)
+        feature_map = scale * feature_map + bias
+
+        feature_map = self.norm(feature_map)
+
+        return feature_map
