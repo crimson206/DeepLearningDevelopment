@@ -1,7 +1,11 @@
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
+
 from typing import List
 from CrimsonDeepLearning.cnns.blocks.sizepreservingblocks import SizePreservingBlocks
+import math
+import numpy as np
 
 class CommonBlock(nn.Module):
     def __init__(self, output_channel:int, module:nn.Module, activation=nn.ReLU(), dropout_rate: float = 0.1) -> None:
@@ -58,7 +62,7 @@ class CommoncoderLayer(nn.Module):
         self.flatsample = SizePreservingBlocks(hidden_channels=hidden_channels, activation=activation, dropout_rate=dropout_rate, use_residual=True)
         self.block = CommonBlock(output_channel=output_channel, module=module, activation=activation, dropout_rate=dropout_rate)
 
-    def forward(self, input_tensor: torch.Tensor, return_intermediate=False) -> torch.Tensor:
+    def forward(self, input_tensor: torch.Tensor, return_intermediate=False, log2_adjust=True) -> torch.Tensor:
         """
         Shape Summary:
         input_tensor.shape: (n_batch, input_channels, height, width).
@@ -71,7 +75,20 @@ class CommoncoderLayer(nn.Module):
         output.shape: (n_batch, output_channel, new_height, new_width).
         intermediate.shape: (n_batch, input_channel, height, width).
         """
+
+        _, _, height, width = input_tensor.shape
+
         intermediate = self.flatsample.forward(input_tensor)
+        if log2_adjust is True:
+            height_log_val = np.log2(height)
+            width_log_val = np.log2(width)
+
+            # Check if either log value is not an integer
+            if math.ceil(height_log_val) != height_log_val or math.ceil(width_log_val) != width_log_val:
+                new_height = 2 ** math.ceil(height_log_val)
+                new_width = 2 ** math.ceil(width_log_val)
+                intermediate = F.interpolate(intermediate, size=(new_height, new_width), mode='bilinear', align_corners=False)
+
         output = self.block.forward(intermediate)
         if return_intermediate:
             return output, intermediate
@@ -100,7 +117,7 @@ class Commoncoder(nn.Module):
     """
     def __init__(self, coder_layers) -> None:
         super(Commoncoder, self).__init__()
-        self.coder_layers = nn.ModuleList(coder_layers)
+        self.coder_layers:list[CommoncoderLayer] = nn.ModuleList(coder_layers)
 
     def forward(self, input_tensor: torch.Tensor, return_intermediate: bool = False):
         """
