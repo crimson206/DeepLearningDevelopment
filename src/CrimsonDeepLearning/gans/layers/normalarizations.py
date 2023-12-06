@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from CrimsonDeepLearning.gans.layers.equalized_layers import EqualizedLinear
+from CrimsonDeepLearning.gans.layers.equalized_layers import EqualizedLinear, EqualizedConv2d
 
 def _compute_mean_std(
     feats: torch.Tensor, eps:float=1e-8
@@ -39,11 +39,12 @@ def adaptive_instance_normalize(
 
 
 class AdaIn(nn.Module):
-    def __init__(self, n_channel):
+    def __init__(self, in_channel, out_channel):
         super().__init__()
-        self.scale_fc = EqualizedLinear(in_feature=n_channel, out_feature=n_channel)
-        self.bias_fc = EqualizedLinear(in_feature=n_channel, out_feature=n_channel)
-        self.norm = nn.InstanceNorm2d(n_channel)
+        self.scale_fc = EqualizedLinear(in_feature=in_channel, out_feature=out_channel)
+        self.bias_fc = EqualizedLinear(in_feature=in_channel, out_feature=out_channel)
+        self.conv = EqualizedConv2d(in_feature=in_channel, out_feature=out_channel, kernel_size=3, padding=1)
+        self.norm = nn.InstanceNorm2d(out_channel)
         
     def forward(self, feature_map, style):
         """
@@ -58,6 +59,8 @@ class AdaIn(nn.Module):
 
         scale = self.scale_fc(style).view(n_batch, n_channel, 1, 1)
         bias = self.bias_fc(style).view(n_batch, n_channel, 1, 1)
+
+        feature_map = self.conv.forward(feature_map)
         feature_map = scale * feature_map + bias
 
         feature_map = self.norm(feature_map)
