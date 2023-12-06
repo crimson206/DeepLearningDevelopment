@@ -5,7 +5,7 @@ import torch.nn.functional as F
 from CrimsonDeepLearning.gans.blocks.styleblocks import StyleBlock, To_RGB
 
 class GeneratorBlock(nn.Module):
-    def __init__(self, n_w_latent, input_channel, output_channel, hidden_channels=None):
+    def __init__(self, n_w_latent, input_channel, output_channel, hidden_channels=None, style_apply_mechanism="modulation"):
         super().__init__()
 
         if hidden_channels is None:
@@ -20,7 +20,7 @@ class GeneratorBlock(nn.Module):
                     input_channel=channels[i],
                     output_channel=channels[i+1],
                     kernel_size=3,
-                    demodulate=True
+                    style_apply_mechanism=style_apply_mechanism,
                 )
                 for i in range(len(channels)-1)
             ]
@@ -60,7 +60,7 @@ class Generator(nn.Module):
         )
         
         self.to_rgb = To_RGB(n_w_latent=n_w_latent, input_channel=self.features[0])
-        self.blocks:list[GeneratorBlock] = nn.ModuleList([GeneratorBlock(n_w_latent, self.features[i], self.features[i+1]) for i in range(self.n_blocks)])
+        self.blocks:list[GeneratorBlock] = nn.ModuleList([GeneratorBlock(n_w_latent=n_w_latent, input_channel=self.features[i], output_channel=self.features[i+1], style_apply_mechanism=style_apply_mechanism) for i in range(self.n_blocks)])
 
     def forward(self, w_latent1, w_latent2, return_whole_w_letent=False):
         initial_w_latent = w_latent1[None,:,:].repeat(2, 1, 1)
