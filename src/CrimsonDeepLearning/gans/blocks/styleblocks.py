@@ -54,8 +54,8 @@ class StyleBlock(nn.Module):
 
 
 class To_RGB(StyleBlock):
-    def __init__(self, n_w_latent: int, input_channel: int, output_channel: int=3):
-        super().__init__(n_w_latent, input_channel, output_channel=output_channel, kernel_size=1, demodulate=False)
+    def __init__(self, n_w_latent: int, input_channel: int, output_channel: int=3, style_apply_mechanism="modulation"):
+        super().__init__(n_w_latent, input_channel, output_channel=output_channel, kernel_size=1, style_apply_mechanism=style_apply_mechanism)
 
     def forward(self, feature_map: torch.Tensor, w_latent: torch.Tensor) -> torch.Tensor:
         """
