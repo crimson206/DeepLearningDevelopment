@@ -20,7 +20,7 @@ class StyleBlock(nn.Module):
         if style_apply_mechanism=="modulation":
             self.style_apply = Conv2dWeightModulate(input_channel, output_channel, kernel_size=kernel_size, demodulate=demodulate)
         elif style_apply_mechanism=="adain":
-            self.style_apply = AdaIn(n_channel=input_channel)
+            self.style_apply = AdaIn(in_channel=input_channel, out_channel=output_channel)
         else:
             raise ValueError("style_apply should be 'modulation' or 'adain'")
 
