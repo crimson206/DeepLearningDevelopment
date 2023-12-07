@@ -88,7 +88,7 @@ def wgangp_critic_loss(critic: Critic, real_image: torch.Tensor, fake_image: tor
     Returns:
     - loss.shape: single value
     """
-    critic_fake = critic(fake_image.detach())
+    critic_fake = critic(fake_image)
 
     if real_image is None:
         return torch.mean(critic_fake)
@@ -129,7 +129,7 @@ def classification_gp_discriminator_loss(discriminator, real_images, fake_images
     """
 
     # Get discriminator outputs for real and fake images
-    fake_preds = discriminator(fake_images.detach())
+    fake_preds = discriminator(fake_images)
     if real_images is None:
         return F.binary_cross_entropy(fake_preds, torch.zeros_like(fake_preds))
     real_preds = F.sigmoid(discriminator(real_images))
