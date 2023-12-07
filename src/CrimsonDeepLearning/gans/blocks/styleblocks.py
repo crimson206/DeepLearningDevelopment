@@ -13,7 +13,7 @@ class StyleBlock(nn.Module):
 
     output.shape: (n_batch, hidden_sizes[-1], height, width).
     """
-    def __init__(self, n_w_latent: int, input_channel: int, output_channel: int, kernel_size: int = 3, style_apply_mechanism="modulation", demodulate=True):
+    def __init__(self, n_w_latent: int, input_channel: int, output_channel: int, kernel_size: int = 3, activation=nn.LeakyReLU(negative_slope=0.2), style_apply_mechanism="modulation", demodulate=True):
         super().__init__()
 
         self.to_style = EqualizedLinear(n_w_latent, input_channel, bias=1.0)
@@ -27,7 +27,7 @@ class StyleBlock(nn.Module):
         self.scale_noise = nn.Parameter(torch.zeros(1))
         self.bias = nn.Parameter(torch.zeros(output_channel))
 
-        self.activation = nn.LeakyReLU(negative_slope=0.2, inplace=True)
+        self.activation = activation
 
     def forward(self, feature_map: torch.Tensor, w_latent: torch.Tensor, add_noise=True) -> torch.Tensor:
         """
@@ -42,8 +42,8 @@ class StyleBlock(nn.Module):
             output.shape:(n_batch, output_channels, height, width).
         """
 
-        style = self.to_style.forward(w_latent)
-        feature_map = self.style_apply.forward(feature_map, style)
+        style = self.activation(self.to_style.forward(w_latent))
+        feature_map = self.activation(self.style_apply.forward(feature_map, style))
         if add_noise:
             noise = self._get_noise(feature_map)
             feature_map = feature_map + self.scale_noise[None, :, None, None] * noise
