@@ -15,3 +15,8 @@ Implemented Models :
 
 Use the following line to install this project:  
 `pip install git+https://github.com/crimson206/DeepLearningDevelopment@0.1.6
+
+# Implementation Example
+
+Now, an example of multiple embedding transformer with a biological prediction.
+   - https://github.com/crimson206/example_archive/blob/main/deeplearning/rna/script.ipynb
