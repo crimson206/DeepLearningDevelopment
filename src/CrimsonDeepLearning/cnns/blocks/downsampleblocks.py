@@ -16,9 +16,7 @@ class ConvDownsampleBlocks(nn.Module):
         super(ConvDownsampleBlocks, self).__init__()
         layers: List[nn.Module] = []
         for i in range(len(hidden_sizes) - 1):
-            layers.append(nn.Conv2d(hidden_sizes[i], hidden_sizes[i+1], kernel_size=3, stride=2, padding=1, bias=False))
-            layers.append(nn.InstanceNorm2d(hidden_sizes[i+1]))
-            layers.append(nn.ReLU(inplace=True))
+            layers.append(ConvDownsampleBlock(hidden_sizes[i], hidden_sizes[i+1]))
 
         self.downsample = nn.Sequential(*layers)
 
@@ -34,13 +32,13 @@ class ConvDownsampleBlocks(nn.Module):
         return self.downsample(x)
 
 class ConvDownsampleBlock(nn.Module):
-    def __init__(self, hidden_sizes: List[int]) -> None:
+    def __init__(self, in_channel: int, out_channel: int, activation=nn.ReLU(inplace=True)) -> None:
         super(ConvDownsampleBlock, self).__init__()
         layers: List[nn.Module] = []
 
-        layers.append(nn.Conv2d(hidden_sizes[0], hidden_sizes[1], kernel_size=3, stride=2, padding=1, bias=False))
-        layers.append(nn.InstanceNorm2d(hidden_sizes[1]))
-        layers.append(nn.ReLU(inplace=True))
+        layers.append(nn.Conv2d(in_channel, out_channel, kernel_size=3, stride=2, padding=1, bias=False))
+        layers.append(nn.InstanceNorm2d(out_channel))
+        layers.append(activation)
 
         self.downsample = nn.Sequential(*layers)
 
