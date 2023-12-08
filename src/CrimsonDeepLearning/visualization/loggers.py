@@ -1,30 +1,30 @@
 import numpy as np
 
-class LossLogger():
+class Logger():
     def __init__(self):
-        self.epoch_losses_dict = {}
-        self.batch_losses_dict = {}
+        self.epoch_values_dict = {}
+        self.batch_values_dict = {}
 
     @property
-    def batch_loss_dict(self):
-        loss_dict = {}
-        for key, losses in self.batch_losses_dict.items():
-            loss_dict[key] = losses[-1] if losses else None
-        return loss_dict
+    def batch_dict(self):
+        value_dict = {}
+        for key, losses in self.batch_values_dict.items():
+            value_dict[key] = losses[-1] if losses else None
+        return value_dict
 
-    def batch_step(self, losses, labels):
-        for loss, label in zip(losses, labels):
-            if label in self.batch_losses_dict.keys():
-                self.batch_losses_dict[label].append(loss)
+    def batch_step(self, values, labels):
+        for loss, label in zip(values, labels):
+            if label in self.batch_values_dict.keys():
+                self.batch_values_dict[label].append(loss)
             else:
-                self.batch_losses_dict[label] = [loss]
+                self.batch_values_dict[label] = [loss]
     
     def epoch_step(self):
-        for label, losses in self.batch_losses_dict.items():
-            avg_loss = np.mean(losses)
-            if label in self.epoch_losses_dict.keys():
-                self.epoch_losses_dict[label].append(avg_loss)
+        for label, values in self.batch_values_dict.items():
+            avg_value = np.mean(values)
+            if label in self.epoch_values_dict.keys():
+                self.epoch_values_dict[label].append(avg_value)
             else:
-                self.epoch_losses_dict[label] = [avg_loss]
+                self.epoch_values_dict[label] = [avg_value]
     
-        self.batch_losses_dict = {}
+        self.batch_values_dict = {}

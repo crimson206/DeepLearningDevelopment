@@ -12,13 +12,13 @@ class UpsampleBlocks(nn.Module):
     (n_batch, hidden_sizes[-1], height * size_up, width * size_up)
     where size_up = 2 ** (len(hidden_sizes) - 1)
     """
-    def __init__(self, hidden_sizes: List[int]) -> None:
+    def __init__(self, hidden_sizes: List[int], activation=nn.ReLU(inplace=True)) -> None:
         super(UpsampleBlocks, self).__init__()
         layers: List[nn.Module] = []
         for i in range(len(hidden_sizes) - 1):
             layers.append(nn.ConvTranspose2d(hidden_sizes[i], hidden_sizes[i+1], kernel_size=3, stride=2, padding=1, output_padding=1, bias=False))
             layers.append(nn.InstanceNorm2d(hidden_sizes[i+1]))
-            layers.append(nn.ReLU(inplace=True))
+            layers.append(activation)
 
         self.upsample = nn.Sequential(*layers)
 
@@ -31,13 +31,15 @@ class UpsampleBlocks(nn.Module):
         """
         return self.upsample(x)
 
+
+
 class UpsampleBlock(nn.Module):
-    def __init__(self, up_channel:int, up_module) -> None:
+    def __init__(self, up_channel:int, up_module, activation=nn.ReLU(inplace=True)) -> None:
         super(UpsampleBlocks, self).__init__()
         layers: List[nn.Module] = []
         layers.append(up_module)
         layers.append(nn.InstanceNorm2d(up_channel[i+1]))
-        layers.append(nn.ReLU(inplace=True))
+        layers.append(activation)
 
         self.upsample = nn.Sequential(*layers)
 
