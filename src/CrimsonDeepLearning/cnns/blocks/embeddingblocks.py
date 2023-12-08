@@ -9,16 +9,15 @@ class CategoryEmbeddingBlock(nn.Module):
     (n_batch, n_domain)
 
     Output tensor shape:
-    (n_batch, n_domain, height, width)
+    (n_batch, n_domain, d_emb)
     """
-    def __init__(self, domain_sizes, height, width):
+    def __init__(self, domain_sizes, d_emb):
         super(CategoryEmbeddingBlock, self).__init__()
         self.embeddings = nn.ModuleList([
-            nn.Embedding(num_embeddings=domain_size, embedding_dim=height * width) 
+            nn.Embedding(num_embeddings=domain_size, embedding_dim=d_emb) 
             for domain_size in domain_sizes
         ])
-        self._height = height
-        self._width = width
+        self._d_emb = d_emb
 
     def forward(self, conditions):
         """
@@ -28,8 +27,8 @@ class CategoryEmbeddingBlock(nn.Module):
         (n_batch, n_domain)
 
         Output tensor shape:
-        (n_batch, n_domain, height, width)
+        (n_batch, n_domain, d_emb)
         """
         conditions = torch.stack([embedding(conditions[:, i]) for i, embedding in enumerate(self.embeddings)], dim=1)
-        conditions = conditions.view(conditions.shape[0], -1, self._height, self._width)
+        conditions = conditions.view(conditions.shape[0], -1, self._d_emb)
         return conditions
