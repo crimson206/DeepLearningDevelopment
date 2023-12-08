@@ -12,11 +12,11 @@ class ConvDownsampleBlocks(nn.Module):
     (n_batch, hidden_sizes[-1], height / size_down, width / size_down)
     where / size_down = (/_up 2) ** (len(hidden_sizes) - 1)
     """
-    def __init__(self, hidden_sizes: List[int]) -> None:
+    def __init__(self, hidden_sizes: List[int], activation) -> None:
         super(ConvDownsampleBlocks, self).__init__()
         layers: List[nn.Module] = []
         for i in range(len(hidden_sizes) - 1):
-            layers.append(ConvDownsampleBlock(hidden_sizes[i], hidden_sizes[i+1]))
+            layers.append(ConvDownsampleBlock(hidden_sizes[i], hidden_sizes[i+1], activation))
 
         self.downsample = nn.Sequential(*layers)
 
