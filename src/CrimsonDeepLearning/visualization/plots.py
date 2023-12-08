@@ -43,7 +43,31 @@ def plot_losses(losses_dict, second_axis_keys=[], title=None, figsize=(6, 4)):
     plt.show()
 
 
+def plot_images(images, titles=None, rows=2, cols=4):
+    num_images = min(len(images), rows * cols)
+
+    plt.figure(figsize=(2 * cols, 2 * rows))
+
+    for i in range(num_images):
+        plt.subplot(rows, cols, i + 1)
+        img = images[i].detach().cpu().permute(1, 2, 0)
+        #img = img.clamp(0, 1)
+        plt.imshow(img)
+        plt.axis('off')
+
+        # Set the title if provided
+        if titles is not None and i < len(titles):
+            plt.title(titles[i])
+        else:
+            plt.title('Image')
+
+    plt.tight_layout()
+    plt.show()
+
+
 go = "donotuseplotpy"
+
+#import plotly.graph_objects as go
 
 def _plot_losses_with_plotly(losses_dict, second_axis_keys=[], title=None, figsize=(600, 400)):
     """
@@ -52,7 +76,8 @@ def _plot_losses_with_plotly(losses_dict, second_axis_keys=[], title=None, figsi
     
     Parameters:
     losses_dict (dict): A dictionary where keys are the names of the losses 
-                        and values are lists of loss values.
+                        and values are lists of 
+                        loss values.
     second_axis_keys (list): List of keys to be plotted on a second y-axis.
     title (str, optional): Title of the plot.
     figsize (tuple): Size of the figure (width, height) in pixels.
