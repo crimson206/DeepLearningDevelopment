@@ -9,12 +9,12 @@ class CoderBuilder(nn.Module):
 
     def build_coder(self, hidden_channels_list, modules, activation=nn.ReLU()):
         coder_layers = []
-        for hidden_channels, up_module in zip(hidden_channels_list, modules):
+        for hidden_channels, module in zip(hidden_channels_list, modules):
             coder_layers.append(
                 CommoncoderLayer(
                     hidden_channels=hidden_channels,
                     output_channel=hidden_channels[-1],
-                    module=up_module,
+                    module=module,
                     activation=activation,
                     )
                 )
@@ -63,6 +63,10 @@ class EncoderSetupHolder():
         return down_modules
 
     def generate_encoder(self, size="small", mechanism="conv", activation=nn.ReLU()):
+        """
+        size= "small" or "medium"
+        mechanism= "conv", "max_pool", "avg_pool"
+        """
 
         hidden_channels_list = self.small_hidden_channels_list if size=="small" else self.medium_hidden_channels_list
 
