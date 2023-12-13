@@ -1,46 +1,66 @@
 import matplotlib.pyplot as plt
+import io
 
-def plot_losses(losses_dict, second_axis_keys=[], title=None, figsize=(6, 4)):
+def plot_dictionary(data_dict, primary_axis_keys=[], second_axis_keys=[], title=None, 
+                    figsize=(6, 4), xlabel='X-axis', primary_ylabel='Primary Y-axis', 
+                    secondary_ylabel='Secondary Y-axis', primary_color='tab:blue', 
+                    secondary_color='tab:red', primary_linestyle='-', secondary_linestyle='--'):
     """
-    Plots the loss curves from a dictionary of losses using Matplotlib, with the option to plot some losses on a second y-axis.
+    Plots curves from a dictionary of data using Matplotlib, with options for dual y-axes.
     
     Parameters:
-    losses_dict (dict): A dictionary where keys are the names of the losses 
-                        and values are lists of loss values.
-    second_axis_keys (list): List of keys to be plotted on a second y-axis.
+    data_dict (dict): A dictionary where keys are the names of the data series 
+                      and values are lists of data values.
+    primary_axis_keys (list): List of keys to be plotted on the primary y-axis.
+    second_axis_keys (list): List of keys to be plotted on a secondary y-axis.
     title (str, optional): Title of the plot.
     figsize (tuple): Size of the figure (width, height) in inches.
+    xlabel (str): Label for the x-axis.
+    primary_ylabel (str): Label for the primary y-axis.
+    secondary_ylabel (str): Label for the secondary y-axis.
+    primary_color (str): Color for the primary y-axis plots.
+    secondary_color (str): Color for the secondary y-axis plots.
+    primary_linestyle (str): Line style for the primary y-axis plots.
+    secondary_linestyle (str): Line style for the secondary y-axis plots.
     """
     # Create a figure and a single subplot
     fig, ax1 = plt.subplots(figsize=figsize)
 
-    # Plotting losses on the primary y-axis
-    for loss_name, loss_values in losses_dict.items():
-        if loss_name not in second_axis_keys:
-            ax1.plot(loss_values, label=loss_name)
+    if len(primary_axis_keys)==0:
+        primary_axis_keys = data_dict.keys()
 
-    ax1.set_xlabel('Epochs')
-    ax1.set_ylabel('Loss', color='tab:blue')
-    ax1.tick_params(axis='y', labelcolor='tab:blue')
+    # Plotting data on the primary y-axis
+    for key, values in data_dict.items():
+        if key in primary_axis_keys:
+            ax1.plot(values, label=key, color=primary_color, linestyle=primary_linestyle)
+
+    ax1.set_xlabel(xlabel)
+    ax1.set_ylabel(primary_ylabel, color=primary_color)
+    ax1.tick_params(axis='y', labelcolor=primary_color)
 
     # Handling the second y-axis
     if second_axis_keys:
-        ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
+        ax2 = ax1.twinx()
         for key in second_axis_keys:
-            if key in losses_dict:
-                ax2.plot(losses_dict[key], label=key, linestyle='--')
-        ax2.set_ylabel('Second Metric', color='tab:red')
-        ax2.tick_params(axis='y', labelcolor='tab:red')
+            if key in data_dict:
+                ax2.plot(data_dict[key], label=key, color=secondary_color, linestyle=secondary_linestyle)
+        ax2.set_ylabel(secondary_ylabel, color=secondary_color)
+        ax2.tick_params(axis='y', labelcolor=secondary_color)
 
     # Title and legend
     if title:
         plt.title(title)
-    fig.tight_layout()  # adjust the layout
+    fig.tight_layout()
     ax1.legend(loc='upper left')
     if second_axis_keys:
         ax2.legend(loc='upper right')
 
+    buffer = io.BytesIO()
+    plt.savefig(buffer, format='png', bbox_inches='tight')
+    buffer.seek(0)
     plt.show()
+    plt.close()
+    return buffer.getvalue()
 
 
 def plot_images(images, titles=None, rows=2, cols=4):
@@ -62,7 +82,13 @@ def plot_images(images, titles=None, rows=2, cols=4):
             plt.title('Image')
 
     plt.tight_layout()
+
+    buffer = io.BytesIO()
+    plt.savefig(buffer, format='png', bbox_inches='tight')
+    buffer.seek(0)
     plt.show()
+    plt.close()
+    return buffer.getvalue()
 
 
 go = "donotuseplotpy"
