@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="DeepLearningDevelopment",
-    version="0.1.8",
+    version="0.1.9",
     description="Personal Deep Learning Module",
     author="Sisung Kim",
     package_dir={"": "src"},
