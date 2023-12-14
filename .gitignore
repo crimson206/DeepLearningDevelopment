@@ -8,6 +8,7 @@ __pycache__/
 
 # private development
 development/
+
 # virtual env
 env_deeplearning_development/
 .vscode/

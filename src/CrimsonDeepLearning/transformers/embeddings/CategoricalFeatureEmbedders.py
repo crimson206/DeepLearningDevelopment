@@ -29,7 +29,7 @@ class ConcatCategoricalFeatureEmbedder(nn.Module):
         total_embedding_size = sum(embedding_sizes)
         self.layer_norm = nn.LayerNorm(total_embedding_size)
 
-    def forward(self, categorical_inputs: List[torch.Tensor], seq_len: Optional[int]=None, attention_mask: Optional[Tensor] = None) -> torch.Tensor:
+    def forward(self, categorical_inputs: List[torch.Tensor], attention_mask: Optional[Tensor] = None) -> torch.Tensor:
         """
         Forward pass of the ConcatCategoricalFeatureEmbedder. Embeds the input indices for each 
         categorical feature and concatenates them into a single tensor.
@@ -43,11 +43,6 @@ class ConcatCategoricalFeatureEmbedder(nn.Module):
         Returns:
             torch.Tensor: A tensor containing the concatenated embeddings of the input features.
         """
-        if seq_len:
-            for i, categorical_input in enumerate(categorical_inputs):
-                if len(categorical_input.shape)==1:
-                    categorical_input = categorical_input.unsqueeze(-1).expand(-1, seq_len)
-                categorical_inputs[i] = categorical_input
 
         embedded_features = [emb(input) for emb, input in zip(self.embeddings, categorical_inputs)]
 

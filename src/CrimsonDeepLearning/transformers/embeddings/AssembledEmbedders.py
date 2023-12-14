@@ -36,7 +36,6 @@ class AssembledEmbedder(nn.Module):
         continuous_feature: torch.Tensor=None,
         skip_embedding: torch.Tensor=None,
         attention_mask: torch.Tensor=None,
-        seq_len: int=None,
     ) -> torch.Tensor:
 
         pos_embedding = self.pos_emb.forward(
@@ -50,7 +49,6 @@ class AssembledEmbedder(nn.Module):
             embeddings.append(
                 self.categorical_embedder.forward(
                 categorical_inputs=split_categorical_ids,
-                seq_len=seq_len,
                 attention_mask=attention_mask
                 )
             )
