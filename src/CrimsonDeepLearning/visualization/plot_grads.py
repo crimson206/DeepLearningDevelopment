@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import io
 
 def get_gradient_magnitudes(model):
     grad_magnitudes = {}
@@ -18,5 +19,10 @@ def plot_gradient_magnitudes(grad_magnitudes, title=None):
         title = 'Gradient Magnitudes per Layer'
     plt.title(title)
     plt.xticks(rotation=90)
-    plt.show()
 
+    buffer = io.BytesIO()
+    plt.savefig(buffer, format='png', bbox_inches='tight')
+    buffer.seek(0)
+    plt.show()
+    plt.close()
+    return buffer.getvalue()

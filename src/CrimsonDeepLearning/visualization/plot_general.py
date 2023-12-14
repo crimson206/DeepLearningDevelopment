@@ -32,7 +32,8 @@ def plot_dictionary(data_dict, primary_axis_keys=[], second_axis_keys=[], title=
     # Plotting data on the primary y-axis
     for key, values in data_dict.items():
         if key in primary_axis_keys:
-            ax1.plot(values, label=key, color=primary_color, linestyle=primary_linestyle)
+            if key not in second_axis_keys:
+                ax1.plot(values, label=key, color=primary_color, linestyle=primary_linestyle)
 
     ax1.set_xlabel(xlabel)
     ax1.set_ylabel(primary_ylabel, color=primary_color)
