@@ -13,7 +13,7 @@ class DCGanGeneratorBlock(nn.Module):
     
     def forward(self, input_tensor):
         return self.main(input_tensor)
-    
+
 class DCGanGenerator(nn.Module):
     def __init__(self, n_latent, channel_sizes, out_channel, activation=nn.LeakyReLU(0.2, True)):
         super(DCGanGenerator, self).__init__()
@@ -30,7 +30,5 @@ class DCGanGenerator(nn.Module):
 
         for block in self.blocks:
             intermediate = self.activation(block(intermediate))
-            print(intermediate.shape)
         output = self.tanh(self.output_conv(intermediate))
-        print(output.shape)
         return output

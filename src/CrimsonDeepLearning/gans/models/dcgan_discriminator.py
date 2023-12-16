@@ -31,7 +31,6 @@ class DCGanDiscriminator(nn.Module):
 
         for block in self.blocks:
             intermediate = self.activation(block(intermediate))
-            print(intermediate.shape)
 
         output = self.sigmoid(self.out_conv(intermediate))
         return output
