@@ -30,7 +30,7 @@ def get_activation_visualization(model, layer, input, channel):
     hook.remove()
     return output
 
-def plot_gcam_2d(conv_layer, index, input_tensor, model):
+def generate_gcam(conv_layer, input_tensor, model):
     outputs, gradients = None, None
 
     def save_gradients(*args):
@@ -49,34 +49,38 @@ def plot_gcam_2d(conv_layer, index, input_tensor, model):
 
     # Forward pass
     output = model(input_tensor)
-    target_class = output.argmax(dim=1)[index].item()
+    target_classes = output.argmax(dim=1)
 
-    # Zero gradients
-    model.zero_grad()
-    # Backward pass
-    one_hot_target = torch.zeros_like(output)
-    one_hot_target[index][target_class] = 1
-    output.backward(gradient=one_hot_target)
+    gcams = []
 
-    weights = F.adaptive_avg_pool2d(gradients[0], (1, 1)).squeeze()[index]
+    for index, target_class in enumerate(target_classes):
+        # Zero gradients for each sample
+        model.zero_grad()
+        # Backward pass
+        one_hot_target = torch.zeros_like(output)
+        one_hot_target[index][target_class] = 1
+        output.backward(gradient=one_hot_target, retain_graph=True)
 
-    feature_maps = outputs
+        weights = F.adaptive_avg_pool2d(gradients[0], (1, 1)).squeeze()[index]
 
-    # Apply the weights to the feature maps
-    gcam = torch.zeros_like(feature_maps[0][0])
-    for i, w in enumerate(weights):
-        gcam += w * feature_maps[index][i]
+        feature_maps = outputs
 
-    # ReLU to only keep positive influences
-    gcam = F.relu(gcam)
+        # Apply the weights to the feature maps
+        gcam = torch.zeros_like(feature_maps[0][0])
+        for i, w in enumerate(weights):
+            gcam += w * feature_maps[index][i]
+
+        # ReLU to only keep positive influences
+        gcam = F.relu(gcam)
+
+        # Normalize
+        gcam = gcam.squeeze().cpu().detach().numpy()
+        gcam = (gcam - gcam.min()) / (gcam.max() - gcam.min())
+
+        gcams.append(gcam)
 
     # Remove hooks
     forward_hook.remove()
     backward_hook.remove()
 
-    # Normalize and visualize
-    gcam = gcam.squeeze().cpu().detach().numpy()
-    gcam = (gcam - gcam.min()) / (gcam.max() - gcam.min())
-
-    plt.imshow(gcam)
-    plt.show()
+    return gcams
