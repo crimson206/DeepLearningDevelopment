@@ -17,3 +17,18 @@ def inject_initialization(initialization_fn, model: nn.Module, target=nn.Conv2d)
             if m.bias is not None:
                 nn.init.constant_(m.bias, 0)
 
+def generate_log_resolution_channels(image_size, max_feature, min_feature=64, reversed=False):
+    n_feature = int(np.log2(image_size)-1)
+
+    channel_sizes = []
+
+    for i in range(n_feature):
+       feature = max_feature // 2**i
+       if feature < min_feature:
+           feature = min_feature
+       channel_sizes.append(feature)
+
+    if reversed:
+        channel_sizes = list(reversed(channel_sizes))
+
+    return channel_sizes
