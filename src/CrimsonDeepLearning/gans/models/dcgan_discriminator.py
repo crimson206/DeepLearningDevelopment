@@ -1,8 +1,6 @@
 import torch
 import torch.nn as nn
 
-
-
 class DCGanDiscriminatorBlock(nn.Module):
     def __init__(self, in_channel, out_channel):
         super(DCGanDiscriminatorBlock, self).__init__()
@@ -32,5 +30,5 @@ class DCGanDiscriminator(nn.Module):
         for block in self.blocks:
             intermediate = self.activation(block(intermediate))
 
-        output = self.sigmoid(self.out_conv(intermediate))
+        output = self.sigmoid(self.out_conv(intermediate)).flatten(start_dim=1)
         return output

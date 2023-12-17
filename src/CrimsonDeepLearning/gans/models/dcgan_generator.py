@@ -24,9 +24,9 @@ class DCGanGenerator(nn.Module):
         self.activation = activation
         self.tanh = nn.Tanh()
 
-    def forward(self, input_tensor):
-
-        intermediate = input_tensor
+    def forward(self, z_latent):
+        
+        intermediate = z_latent[:,:,None, None]
 
         for block in self.blocks:
             intermediate = self.activation(block(intermediate))
