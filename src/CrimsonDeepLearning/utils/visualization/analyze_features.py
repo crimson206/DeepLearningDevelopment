@@ -1,8 +1,6 @@
 import torch
 import torch.nn.functional as F
 
-import matplotlib.pyplot as plt
-
 def get_activation_visualization(model, layer, input, channel):
     """
     Modify the specified layer of the model to activate only the specified channel.
@@ -29,6 +27,7 @@ def get_activation_visualization(model, layer, input, channel):
 
     hook.remove()
     return output
+
 
 def generate_gcam(conv_layer, input_tensor, model):
     outputs, gradients = None, None
@@ -66,15 +65,21 @@ def generate_gcam(conv_layer, input_tensor, model):
         feature_maps = outputs
 
         # Apply the weights to the feature maps
-        gcam = torch.zeros_like(feature_maps[0][0])
-        for i, w in enumerate(weights):
-            gcam += w * feature_maps[index][i]
+        gcam = torch.zeros_like(feature_maps[0])
+
+        if feature_maps.shape[1]==1:
+            gcam = weights * feature_maps[index]
+
+        else:
+            for i, w in enumerate(weights):
+                gcam[i,...] = w * feature_maps[index][i]
+
 
         # ReLU to only keep positive influences
         gcam = F.relu(gcam)
 
         # Normalize
-        gcam = gcam.squeeze().cpu().detach().numpy()
+        gcam = gcam.cpu().detach()
         gcam = (gcam - gcam.min()) / (gcam.max() - gcam.min())
 
         gcams.append(gcam)
@@ -83,4 +88,4 @@ def generate_gcam(conv_layer, input_tensor, model):
     forward_hook.remove()
     backward_hook.remove()
 
-    return gcams
+    return torch.stack(gcams)
