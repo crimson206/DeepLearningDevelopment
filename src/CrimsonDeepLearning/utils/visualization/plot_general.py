@@ -1,52 +1,47 @@
 import matplotlib.pyplot as plt
 import io
+import itertools
 
 def plot_dictionary(data_dict, primary_axis_keys=[], second_axis_keys=[], title=None, 
                     figsize=(6, 4), xlabel='X-axis', primary_ylabel='Primary Y-axis', 
-                    secondary_ylabel='Secondary Y-axis', primary_color='tab:blue', 
-                    secondary_color='tab:red', primary_linestyle='-', secondary_linestyle='--'):
+                    secondary_ylabel='Secondary Y-axis', primary_linestyle='-', 
+                    secondary_linestyle='--', primary_colors=None, secondary_colors=None):
     """
     Plots curves from a dictionary of data using Matplotlib, with options for dual y-axes.
-    
-    Parameters:
-    data_dict (dict): A dictionary where keys are the names of the data series 
-                      and values are lists of data values.
-    primary_axis_keys (list): List of keys to be plotted on the primary y-axis.
-    second_axis_keys (list): List of keys to be plotted on a secondary y-axis.
-    title (str, optional): Title of the plot.
-    figsize (tuple): Size of the figure (width, height) in inches.
-    xlabel (str): Label for the x-axis.
-    primary_ylabel (str): Label for the primary y-axis.
-    secondary_ylabel (str): Label for the secondary y-axis.
-    primary_color (str): Color for the primary y-axis plots.
-    secondary_color (str): Color for the secondary y-axis plots.
-    primary_linestyle (str): Line style for the primary y-axis plots.
-    secondary_linestyle (str): Line style for the secondary y-axis plots.
+    ...
     """
     # Create a figure and a single subplot
     fig, ax1 = plt.subplots(figsize=figsize)
 
-    if len(primary_axis_keys)==0:
+    if len(primary_axis_keys) == 0:
         primary_axis_keys = data_dict.keys()
+
+    # Default colors for primary and secondary y-axis plots
+    if not primary_colors:
+        primary_colors = plt.cm.tab10.colors  # Default to using 10 categorical colors
+    if not secondary_colors:
+        secondary_colors = plt.cm.tab20c.colors  # Default to using 20 categorical colors
+
+    primary_color_cycle = itertools.cycle(primary_colors)
+    secondary_color_cycle = itertools.cycle(secondary_colors)
 
     # Plotting data on the primary y-axis
     for key, values in data_dict.items():
-        if key in primary_axis_keys:
-            if key not in second_axis_keys:
-                ax1.plot(values, label=key, color=primary_color, linestyle=primary_linestyle)
+        if key in primary_axis_keys and key not in second_axis_keys:
+            ax1.plot(values, label=key, color=next(primary_color_cycle), linestyle=primary_linestyle)
 
     ax1.set_xlabel(xlabel)
-    ax1.set_ylabel(primary_ylabel, color=primary_color)
-    ax1.tick_params(axis='y', labelcolor=primary_color)
+    ax1.set_ylabel(primary_ylabel, color='black')
+    ax1.tick_params(axis='y', labelcolor='black')
 
     # Handling the second y-axis
     if second_axis_keys:
         ax2 = ax1.twinx()
         for key in second_axis_keys:
             if key in data_dict:
-                ax2.plot(data_dict[key], label=key, color=secondary_color, linestyle=secondary_linestyle)
-        ax2.set_ylabel(secondary_ylabel, color=secondary_color)
-        ax2.tick_params(axis='y', labelcolor=secondary_color)
+                ax2.plot(data_dict[key], label=key, color=next(secondary_color_cycle), linestyle=secondary_linestyle)
+        ax2.set_ylabel(secondary_ylabel, color='black')
+        ax2.tick_params(axis='y', labelcolor='black')
 
     # Title and legend
     if title:
@@ -64,6 +59,7 @@ def plot_dictionary(data_dict, primary_axis_keys=[], second_axis_keys=[], title=
     return buffer.getvalue()
 
 
+
 def plot_images(images, titles=None, rows=2, cols=4):
     num_images = min(len(images), rows * cols)
 
@@ -71,7 +67,11 @@ def plot_images(images, titles=None, rows=2, cols=4):
 
     for i in range(num_images):
         plt.subplot(rows, cols, i + 1)
-        img = images[i].detach().cpu().permute(1, 2, 0)
+
+        if 1 < images.shape[1]:
+            img = images[i].permute(1, 2, 0)
+        elif 1 == images.shape[1]:
+            img = images[i].squeeze()
         #img = img.clamp(0, 1)
         plt.imshow(img)
         plt.axis('off')
@@ -90,6 +90,9 @@ def plot_images(images, titles=None, rows=2, cols=4):
     plt.show()
     plt.close()
     return buffer.getvalue()
+
+
+
 
 
 go = "donotuseplotpy"
