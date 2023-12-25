@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import io
 import itertools
+import torch
 
 def plot_dictionary(data_dict, primary_axis_keys=[], second_axis_keys=[], title=None, 
                     figsize=(6, 4), xlabel='X-axis', primary_ylabel='Primary Y-axis', 
@@ -90,9 +91,6 @@ def plot_images(images, titles=None, rows=2, cols=4):
     plt.show()
     plt.close()
     return buffer.getvalue()
-
-
-
 
 
 go = "donotuseplotpy"
