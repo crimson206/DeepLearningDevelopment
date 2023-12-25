@@ -47,7 +47,7 @@ def generate_gcam(conv_layer, input_tensor, model):
     model.eval()
 
     # Forward pass
-    output = model(input_tensor)
+    output = model(*input_tensor)
     target_classes = output.argmax(dim=1)
 
     gcams = []
