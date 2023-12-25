@@ -5,6 +5,23 @@ import torch.nn as nn
 import torch.nn.functional as F
 from math import sqrt
 
+import torch.nn as nn
+import numpy as np
+
+class EqualizedLayer(nn.Module):
+    def __init__(self, module):
+        super().__init__()
+        self.module = module
+        self.gain = 1/ np.sqrt(np.prod(module.weight.shape[1:]))
+
+    def forward(self, *input):
+        self.module.weight.data *= self.gain
+        output = self.module(*input)
+        self.module.weight.data /= self.gain
+        return output
+
+
+
 class EqualizedWeight(nn.Module):
     def __init__(self, shape):
         super().__init__()
