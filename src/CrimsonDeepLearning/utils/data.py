@@ -35,8 +35,14 @@ class ListDataset(Dataset):
     def __getitem__(self, idx):
         return self.data_list[idx]
 
-
-
+class ConditionGenerator:
+    def __init__(self, label_tensor):
+        self.label_tensor = label_tensor
+        self.max_labels = label_tensor.max(dim=0).values
+    
+    def generate(self, n_batch):
+        random_conditions = [torch.randint(high=int(label.item())+1, size=(n_batch,)) for label in self.max_labels]
+        return torch.stack(random_conditions, dim=1)
 
 class CustomImageDataset(Dataset):
     def __init__(self, images, labels, transform=None):
